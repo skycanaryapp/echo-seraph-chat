@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ChatHeader from "./ChatHeader";
@@ -9,7 +8,7 @@ import { sendMessage, simulateStreamResponse } from "@/services/ApiService";
 import { 
   createConversation, 
   getMessages, 
-  addMessage,
+  createMessage,
   getConversation
 } from "@/services/ChatService";
 import { v4 as uuidv4 } from "uuid";
@@ -26,7 +25,6 @@ const Chat = () => {
   const [currentTitle, setCurrentTitle] = useState("New Chat");
   const { user } = useAuth();
   
-  // Load messages for the current conversation
   useEffect(() => {
     const fetchMessages = async () => {
       if (!conversationId) {
@@ -36,16 +34,13 @@ const Chat = () => {
       }
 
       try {
-        // Get conversation details
         const conversation = await getConversation(conversationId);
         if (conversation) {
           setCurrentTitle(conversation.title);
         }
 
-        // Get messages
         const chatMessages = await getMessages(conversationId);
         
-        // Convert to our Message format
         const formattedMessages: Message[] = chatMessages.map(msg => ({
           id: msg.id,
           content: msg.content,
@@ -63,7 +58,6 @@ const Chat = () => {
     fetchMessages();
   }, [conversationId]);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
   }, [messages, streamingText]);
@@ -75,7 +69,6 @@ const Chat = () => {
   const handleSendMessage = async (content: string) => {
     if (!content.trim()) return;
 
-    // Add user message to chat
     const userMessage: Message = {
       id: uuidv4(),
       content,
@@ -85,7 +78,6 @@ const Chat = () => {
     
     setMessages((prev) => [...prev, userMessage]);
     
-    // Create a placeholder for AI response
     const aiMessageId = uuidv4();
     const aiMessage: Message = {
       id: aiMessageId,
@@ -100,36 +92,29 @@ const Chat = () => {
     setStreamingText("");
 
     try {
-      // Create a new conversation if this is a new chat
       let chatId = conversationId;
 
       if (!chatId) {
-        // First words of the message become the title, limited to 30 chars
         const title = content.split(' ').slice(0, 5).join(' ');
         const conversationData = await createConversation(
           title.length > 30 ? title.substring(0, 30) + '...' : title
         );
         chatId = conversationData.id;
-        // Navigate to the new conversation
         navigate(`/chat/${chatId}`);
       }
 
-      // Save user message to Supabase
       if (chatId) {
-        await addMessage(chatId, content, "user");
+        await createMessage(chatId, content, "user");
       }
 
-      // Send the message to the API
       const responseText = await sendMessage(content);
       
-      // Simulate streaming the response
       let cleanup = simulateStreamResponse(
         responseText,
         (chunk) => {
           setStreamingText((prev) => prev + chunk);
         },
         async () => {
-          // Update the AI message with the complete response
           setMessages((prev) =>
             prev.map((msg) =>
               msg.id === aiMessageId
@@ -144,14 +129,12 @@ const Chat = () => {
           setLoading(false);
           setStreamingText("");
 
-          // Save AI response to Supabase
           if (chatId) {
-            await addMessage(chatId, responseText, "assistant");
+            await createMessage(chatId, responseText, "assistant");
           }
         }
       );
       
-      // Cleanup function for component unmount
       return () => cleanup();
     } catch (error) {
       let errorMessage = "Failed to get response";
@@ -164,7 +147,6 @@ const Chat = () => {
         duration: 5000,
       });
       
-      // Update the AI message to show the error
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === aiMessageId
@@ -181,7 +163,6 @@ const Chat = () => {
   };
 
   const handleClearChat = () => {
-    // Navigate to a new chat
     navigate('/chat');
     setMessages([]);
     setCurrentTitle("New Chat");
@@ -223,7 +204,6 @@ const Chat = () => {
             </div>
           )}
           
-          {/* Invisible div to scroll to */}
           <div ref={messagesEndRef} />
         </div>
       </div>

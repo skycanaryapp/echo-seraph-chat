@@ -96,6 +96,7 @@ export const getMessages = async (conversationId: string): Promise<MessageData[]
   }
 };
 
+// Add the missing createMessage function that Chat.tsx is importing as addMessage
 export const createMessage = async (
   conversationId: string,
   content: string,
@@ -172,4 +173,13 @@ export const deleteAllConversations = async (): Promise<void> => {
     console.error("Error deleting all conversations:", error);
     throw error;
   }
+};
+
+// Add the missing addMessage function that's being imported in Chat.tsx
+export const addMessage = async (
+  conversationId: string,
+  content: string,
+  role: "user" | "assistant"
+): Promise<MessageData> => {
+  return createMessage(conversationId, content, role);
 };
