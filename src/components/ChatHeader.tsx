@@ -1,8 +1,7 @@
 
 import { Button } from "@/components/ui/button";
-import { MessageSquare, PanelLeft, Trash2 } from "lucide-react";
+import { MessageSquare, Trash2 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
-import { SidebarTrigger } from "./ui/sidebar";
 
 interface ChatHeaderProps {
   title?: string;
@@ -13,9 +12,6 @@ const ChatHeader = ({ title = "AI Chat Interface", onClearChat }: ChatHeaderProp
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between p-3 border-b bg-white/70 backdrop-blur-md dark:bg-black/50">
       <div className="flex items-center space-x-3">
-        <SidebarTrigger 
-          className="h-8 w-8 text-primary hover:bg-primary/10 dark:hover:bg-primary/20"
-        />
         <div className="flex items-center space-x-2">
           <MessageSquare className="h-5 w-5 text-primary" />
           <h1 className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
