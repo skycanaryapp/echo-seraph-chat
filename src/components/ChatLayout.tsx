@@ -5,6 +5,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import ChatSidebar from "@/components/ChatSidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthUI from "./auth/AuthUI";
+import ThemeToggle from "./ThemeToggle";
 
 interface ChatLayoutProps {
   children: ReactNode;
@@ -24,9 +25,9 @@ const ChatLayout = ({ children }: ChatLayoutProps) => {
   };
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={true}>
       <div className="flex h-screen w-full">
-        {!authLoading && user && (
+        {!authLoading && (
           <ChatSidebar 
             onNewChat={handleNewChat}
             onSelectChat={handleSelectChat}
@@ -35,6 +36,10 @@ const ChatLayout = ({ children }: ChatLayoutProps) => {
         )}
         
         <div className="flex-1 flex flex-col">
+          <div className="absolute top-4 right-4 z-10">
+            <ThemeToggle />
+          </div>
+          
           {!authLoading && !user ? (
             <div className="flex items-center justify-center h-full p-4">
               <AuthUI />

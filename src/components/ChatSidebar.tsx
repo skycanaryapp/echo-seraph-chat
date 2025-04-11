@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { PlusCircle, Trash2, MessageSquare } from "lucide-react";
+import { PlusCircle, Trash2, MessageSquare, LogOut, Search } from "lucide-react";
 import { format } from "date-fns";
 import { 
   Sidebar, 
@@ -10,12 +10,13 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarInput,
-  SidebarTrigger
+  SidebarTrigger,
+  SidebarRail
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
 import { Conversation, getConversations, deleteConversation } from "@/services/ChatService";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -29,6 +30,7 @@ interface ChatSidebarProps {
 const ChatSidebar = ({ onNewChat, onSelectChat, currentChatId }: ChatSidebarProps) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const { user, signOut } = useAuth();
 
   const fetchConversations = async () => {
@@ -80,39 +82,60 @@ const ChatSidebar = ({ onNewChat, onSelectChat, currentChatId }: ChatSidebarProp
     return format(new Date(dateString), "MMM d, yyyy");
   };
 
+  const filteredConversations = conversations.filter(conv => 
+    conv.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <Sidebar>
+      <SidebarRail />
       <SidebarHeader>
         <div className="flex items-center justify-between p-2">
-          <h2 className="text-xl font-semibold">Chat History</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">Chats</h2>
+          </div>
           <SidebarTrigger />
         </div>
       </SidebarHeader>
-      <SidebarContent>
-        <div className="p-2">
+      <SidebarContent className="px-2">
+        <div className="mb-2">
           <Button 
-            className="w-full mb-2 justify-start" 
+            className="w-full justify-start apple-gradient text-white hover:opacity-90 transition-opacity"
             onClick={onNewChat}
-            variant="outline"
+            variant="default"
           >
             <PlusCircle className="mr-2 h-4 w-4" />
             New Chat
           </Button>
         </div>
         
-        <ScrollArea className="h-[calc(100vh-180px)]">
+        <div className="mb-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search conversations..."
+              className="pl-9 h-9"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+        
+        <ScrollArea className="h-[calc(100vh-180px)] pr-1">
           {loading ? (
             <div className="p-4 text-center text-muted-foreground">Loading...</div>
-          ) : conversations.length === 0 ? (
-            <div className="p-4 text-center text-muted-foreground">No conversations yet</div>
+          ) : filteredConversations.length === 0 ? (
+            <div className="p-4 text-center text-muted-foreground">
+              {searchTerm ? "No matches found" : "No conversations yet"}
+            </div>
           ) : (
             <SidebarMenu>
-              {conversations.map((conversation) => (
+              {filteredConversations.map((conversation) => (
                 <SidebarMenuItem key={conversation.id}>
                   <SidebarMenuButton
                     isActive={currentChatId === conversation.id}
                     onClick={() => onSelectChat(conversation.id)}
-                    className="justify-between group"
+                    className="justify-between group rounded-lg transition-all"
                   >
                     <div className="flex items-center">
                       <MessageSquare className="mr-2 h-4 w-4" />
@@ -127,7 +150,7 @@ const ChatSidebar = ({ onNewChat, onSelectChat, currentChatId }: ChatSidebarProp
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={(e) => handleDeleteConversation(conversation.id, e)}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -146,10 +169,16 @@ const ChatSidebar = ({ onNewChat, onSelectChat, currentChatId }: ChatSidebarProp
       
       <SidebarFooter>
         {user && (
-          <div className="p-2 border-t">
+          <div className="p-3 border-t">
             <div className="flex items-center justify-between">
-              <span className="text-sm truncate">{user.email}</span>
-              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+              <span className="text-sm truncate font-medium">{user.email}</span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleSignOut}
+                className="flex items-center gap-1 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+              >
+                <LogOut className="h-3.5 w-3.5" />
                 Sign Out
               </Button>
             </div>
