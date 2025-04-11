@@ -87,8 +87,8 @@ const ChatSidebar = ({ onNewChat, onSelectChat, currentChatId }: ChatSidebarProp
   );
 
   return (
-    <Sidebar>
-      <SidebarRail />
+    <Sidebar className="z-20">
+      <SidebarRail className="after:bg-primary/10 hover:after:bg-primary/20" />
       <SidebarHeader>
         <div className="flex items-center justify-between p-2">
           <div className="flex items-center gap-2">
@@ -100,7 +100,7 @@ const ChatSidebar = ({ onNewChat, onSelectChat, currentChatId }: ChatSidebarProp
       <SidebarContent className="px-2">
         <div className="mb-2">
           <Button 
-            className="w-full justify-start apple-gradient text-white hover:opacity-90 transition-opacity"
+            className="w-full justify-start bg-gradient-to-r from-blue-600 to-blue-400 text-white hover:opacity-90 transition-opacity"
             onClick={onNewChat}
             variant="default"
           >
@@ -135,10 +135,10 @@ const ChatSidebar = ({ onNewChat, onSelectChat, currentChatId }: ChatSidebarProp
                   <SidebarMenuButton
                     isActive={currentChatId === conversation.id}
                     onClick={() => onSelectChat(conversation.id)}
-                    className="justify-between group rounded-lg transition-all"
+                    className="justify-between group rounded-lg transition-all hover:bg-primary/5"
                   >
                     <div className="flex items-center">
-                      <MessageSquare className="mr-2 h-4 w-4" />
+                      <MessageSquare className="mr-2 h-4 w-4 text-primary" />
                       <div className="truncate">{conversation.title}</div>
                     </div>
                     <div className="flex items-center space-x-1">
@@ -150,7 +150,7 @@ const ChatSidebar = ({ onNewChat, onSelectChat, currentChatId }: ChatSidebarProp
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
                             onClick={(e) => handleDeleteConversation(conversation.id, e)}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -176,7 +176,7 @@ const ChatSidebar = ({ onNewChat, onSelectChat, currentChatId }: ChatSidebarProp
                 variant="ghost" 
                 size="sm" 
                 onClick={handleSignOut}
-                className="flex items-center gap-1 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+                className="flex items-center gap-1 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 dark:hover:text-red-400"
               >
                 <LogOut className="h-3.5 w-3.5" />
                 Sign Out

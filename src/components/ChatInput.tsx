@@ -46,7 +46,7 @@ const ChatInput = ({ onSubmit, disabled = false }: ChatInputProps) => {
   return (
     <form 
       onSubmit={handleSubmit} 
-      className="flex items-end space-x-2 bg-background border rounded-lg p-3 shadow-sm"
+      className="flex items-end space-x-2 bg-background/80 backdrop-blur-sm border rounded-lg p-3 shadow-sm"
     >
       <Textarea
         ref={textareaRef}
@@ -61,7 +61,7 @@ const ChatInput = ({ onSubmit, disabled = false }: ChatInputProps) => {
         type="submit" 
         size="icon" 
         disabled={!message.trim() || disabled}
-        className="h-10 w-10 rounded-full bg-indigo hover:bg-indigo-light transition-colors duration-300"
+        className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 hover:opacity-90 transition-opacity"
       >
         <Send className="h-5 w-5" />
       </Button>
