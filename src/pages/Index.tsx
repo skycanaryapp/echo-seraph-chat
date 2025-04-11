@@ -1,8 +1,8 @@
 
-import Chat from "@/components/Chat";
+import { Navigate } from "react-router-dom";
 
 const Index = () => {
-  return <Chat />;
+  return <Navigate to="/chat" replace />;
 };
 
 export default Index;
